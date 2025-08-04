@@ -69,12 +69,28 @@
    ```
 
 6. 在 Home Assistant 中订阅 `home/energy/price` 主题，接收实时电价推送。
+   ```
+   实体名称：实时电价
+   实体类型：传感器
+   状态类别：测量值
+   度量单位：CNY/kWh
+   状态主题：home/energy/price
+   值模板：{{ value_json.price }}
+
+   实体名称：实时电价 电价状态
+   状态主题：home/energy/price
+   值模板：{{ value_json.status }}
+
+   上面没有提到的选项均为空
+   ```
 
 ---
 
 ## 🖼️ 效果图
 
-待上传
+<img width="1027" height="692" alt="image" src="https://github.com/user-attachments/assets/7c190260-b9dd-4360-861b-382c4b0141aa" />
+<img width="1277" height="848" alt="image" src="https://github.com/user-attachments/assets/5db61ef0-b053-43e3-b8cc-e5081356010f" />
+
 
 ---
 
