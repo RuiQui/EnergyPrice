@@ -1,0 +1,15 @@
+[Unit]
+
+Description=阶梯电价实体
+
+
+[Service]
+
+User=xuanrui
+
+ExecStart=/home/user/app/shell/energyprice/energyprice.sh
+
+
+[Install]
+
+WantedBy=multi-user.target
