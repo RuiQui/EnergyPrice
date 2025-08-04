@@ -5,7 +5,7 @@ Description=阶梯电价实体
 
 [Service]
 
-User=xuanrui
+User=root
 
 ExecStart=/home/user/app/shell/energyprice/energyprice.sh
 
