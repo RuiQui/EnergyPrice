@@ -170,8 +170,9 @@ last_status=""
 last_report_ts=$(date +%s) #当前时间戳
 
 #从TASMOTA读取总用电量
-mosquitto_sub -h "$MQTT_HOST" -p "$MQTT_PORT" -u "$MQTT_USER" -P "$MQTT_PASS" -t "$MQTT_TOPIC" |
-while read -r payload; do #循环
+mosquitto_sub -v -h "$MQTT_HOST" -p "$MQTT_PORT" -u "$MQTT_USER" -P "$MQTT_PASS" \
+  -t "$MQTT_TOPIC" -t "$MQTT_TOPIC_STATUS_10" |
+while read -r topic payload; do #循环
   old_year=$current_year
   old_month=$current_month
   refresh_current_ym #获取当前年月
@@ -181,7 +182,12 @@ while read -r payload; do #循环
     check_and_init_month #初始化年月，写入当前电量
   fi
 
-  total=$(echo "$payload" | jq '.ENERGY.Total')
+  if [[ "$topic" == "$MQTT_TOPIC_STATUS_10" ]]; then
+  total=$(echo "$payload" | jq -r '.StatusSNS.ENERGY.Total')
+else
+  total=$(echo "$payload" | jq -r '.ENERGY.Total')
+fi
+
   [ -z "$total" ] || [ "$total" = "null" ] && continue
   used=$(echo "$total - $start_energy" | bc -l)
 
@@ -190,7 +196,7 @@ while read -r payload; do #循环
   now_ts=$(date +%s)
   elapsed=$(( now_ts - last_report_ts ))
 
-  if [ "$price" != "$last_price" ] || [ "$status" != "$last_status" ] || [ "$elapsed" -ge 3600 ]; then
+  if [ "$price" != "$last_price" ] || [ "$status" != "$last_status" ] || [ "$elapsed" -ge 3600 ] || [[ "$topic" == "$MQTT_TOPIC_STATUS_10" ]]; then
     json="{\"price\":${price},\"status\":\"${status}\",\"used\":\"${used}\"}"
     mosquitto_pub -h "$MQTT_HOST" -p "$MQTT_PORT" -u "$MQTT_USER" -P "$MQTT_PASS" \
       -t "$MQTT_PRICE_TOPIC" -m "$json"
