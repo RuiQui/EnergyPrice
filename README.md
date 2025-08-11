@@ -29,7 +29,7 @@
 ## 📦 使用方法
 
 1. 创建数据库：
-   ```
+   ```sql
    CREATE TABLE tasmota_power (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timestamp DATETIME,
@@ -71,6 +71,8 @@
    ```
 
 6. 在 Home Assistant 的MQTT集成中添加MQTT设备，接收实时电价推送。
+   
+   - 添加MQTT设备
    ```
    实体类型：传感器
    实体名称：实时电价
@@ -87,10 +89,20 @@
 
    上面没有提到的选项均为空
    ```
+   - （可选）添加月用电量
+   ```
+   实体类型：传感器
+   实体名称：本月用电
+   设备类别：电力
+   状态类别：测量值
+   度量单位：kWh
+   状态主题：home/energy/price
+   值模板：{{ value_json.used }}
+   ```
    
-7. 添加自动化任务，实现整点上报以及Home-Assistant启动上报
+8. 添加自动化任务，实现整点上报以及Home-Assistant启动上报
    ```yaml
-   alias: 整点请求Tasmota上报
+   alias: 强制Tasmota上报
    description: ""
    triggers:
      - minutes: "0"
@@ -107,7 +119,6 @@
        action: mqtt.publish
    mode: single
    ```
-
 ---
 
 ## 🖼️ 效果图
@@ -121,7 +132,7 @@
 ## 📄 开源许可
 
 
-* **GPLv3**
+* **GPL-3.0**
 
 
 ---
